@@ -36,6 +36,19 @@ export function getArticle(slug: string): Article | undefined {
   return getArticles().find((article) => article.slug === slug);
 }
 
+/** Static params for /writing/[slug] and its opengraph/twitter image
+    routes. `output: "export"` requires at least one generated param even
+    when there are zero articles yet, so this falls back to a harmless
+    placeholder slug in that case — getArticle() never matches it, so the
+    page 404s and the OG images fall back to the generic card. Nothing
+    ever links to it. */
+export function getArticleSlugParams(): { slug: string }[] {
+  const articles = getArticles();
+  return articles.length > 0
+    ? articles.map(({ slug }) => ({ slug }))
+    : [{ slug: "_placeholder" }];
+}
+
 export type ArticleLink = {
   slug: string;
   title: string;

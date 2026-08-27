@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { Reveal } from "@/components/Reveal";
 import { BackLink } from "@/components/BackLink";
-import { getArticle, getArticles, formatDate } from "@/lib/writing";
+import { getArticle, getArticleSlugParams, formatDate } from "@/lib/writing";
 import { mdxOptions, mdxComponents } from "@/lib/mdx";
 import { projectForArticle, projectSlug } from "@/data/projects";
 import { T } from "@/lib/i18n";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function generateStaticParams() {
-  return getArticles().map(({ slug }) => ({ slug }));
+  return getArticleSlugParams();
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

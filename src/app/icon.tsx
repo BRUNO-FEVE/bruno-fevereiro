@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getNewsreaderItalicFont } from "@/lib/og-font";
 
+export const dynamic = "force-static";
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 

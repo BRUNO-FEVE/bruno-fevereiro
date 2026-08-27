@@ -3,6 +3,8 @@ import { projects, projectSlug } from "@/data/projects";
 import { getArticles } from "@/lib/writing";
 import { SITE_URL } from "@/lib/site";
 
+export const dynamic = "force-static";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = ["", "/projects", "/writing"].map((path) => ({
     url: `${SITE_URL}${path}`,
