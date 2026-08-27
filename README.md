@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# brunofevereiro — personal site
 
-## Getting Started
+Portfolio + writing. Next.js App Router, MDX articles as plain files, deployed on Vercel.
 
-First, run the development server:
+## Run it
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
+```sh
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Write an article
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Add a file to `content/writing/my-article.mdx`:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```mdx
+---
+title: "My article title"
+date: "2026-07-10"
+summary: "One or two sentences shown in lists and under the title."
+---
 
-## Learn More
+Regular markdown here. Code blocks get syntax highlighting automatically.
+```
 
-To learn more about Next.js, take a look at the following resources:
+The filename becomes the URL: `content/writing/my-article.mdx` → `/writing/my-article`.
+Commit and push — Vercel deploys it.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Add a project
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Edit `src/data/projects.ts`. Set `featured: true` to show it on the home page (first three shown).
 
-## Deploy on Vercel
+## Where things live
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `src/app/page.tsx` — home page (hero headline + bio live here)
+- `src/components/Header.tsx` / `Footer.tsx` — nav and contact links
+- `src/app/globals.css` — colors (light/dark), typography, article prose styles
+- `src/components/Reveal.tsx` — scroll/load animations (Motion)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Design
+
+- Serif: Newsreader (headlines, italic accents) · Sans: Geist (body) · Mono: Geist Mono (code)
+- Strict palette: white + black with a red accent; dark mode follows the system automatically.
+- Cinematic full-viewport hero (`src/components/Hero.tsx`) — photo lives at `public/hero.png`.
+- Every image is automatically treated as an aged photo: warm monochrome filter on all `img`
+  elements (globals.css), plus grain + vignette via the `.photo-frame` wrapper (article images
+  get it automatically through the MDX `img` override).

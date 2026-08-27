@@ -1,26 +1,415 @@
 @import "tailwindcss";
 
+/* The whole site lives in the hero's world: black, filmic, red accent. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #0a0a0a;
+  --surface: #151515;
+  --ink: #f2f2f2;
+  --muted: #8c8c8c;
+  --faint: #242424;
+  --accent: #ff2e2e;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-accent: var(--accent);
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+/* Faint film grain over everything, so every page shares the hero's texture */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  mix-blend-mode: overlay;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+/* Every photograph gets an aged-film treatment: warm monochrome, slightly faded. */
+img,
+video {
+  filter: grayscale(100%) sepia(30%) contrast(1.06) brightness(0.97);
+}
+
+/* Hero film grain: dense fine emulsion grain, hard-light blended so bright
+   grains lift the shadows and dark grains bite the highlights — the noise
+   modulates the image tones like film stock (with the slight gray lift
+   Bruno chose over the alternatives). */
+.grain-live {
+  position: absolute;
+  inset: -100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='1.6' intercept='-0.52'/%3E%3CfeFuncG type='linear' slope='1.6' intercept='-0.52'/%3E%3CfeFuncB type='linear' slope='1.6' intercept='-0.52'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  mix-blend-mode: hard-light;
+  opacity: 0.35;
+  pointer-events: none;
+  animation: film-grain 0.6s steps(1, end) infinite;
+}
+
+@keyframes film-grain {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  11% {
+    transform: translate(-2%, -4%);
+  }
+  22% {
+    transform: translate(3%, 1%);
+  }
+  33% {
+    transform: translate(-1%, 3%);
+  }
+  44% {
+    transform: translate(4%, -2%);
+  }
+  55% {
+    transform: translate(-3%, 2%);
+  }
+  66% {
+    transform: translate(1%, -3%);
+  }
+  77% {
+    transform: translate(-4%, -1%);
+  }
+  88% {
+    transform: translate(2%, 4%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain-live {
+    animation: none;
+  }
+}
+
+/* Film grain overlay (SVG noise, self-contained) */
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  mix-blend-mode: overlay;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+/* 35mm sprocket holes for the photo filmstrips (holes punched through to the page bg).
+   Pattern width 21px divides the 168px film cell exactly — keeps the infinite-loop
+   wrap invisible. */
+.film-perf {
+  height: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='21' height='16'%3E%3Crect x='5.5' y='4.5' width='10' height='7' rx='2' fill='%230a0a0a'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 21px 16px;
+}
+
+/* Cinematic hero shading: vignette + legibility gradients */
+.hero-vignette {
+  background:
+    linear-gradient(rgba(10, 10, 10, 0.66), rgba(10, 10, 10, 0.66)),
+    radial-gradient(ellipse at center, transparent 22%, rgba(0, 0, 0, 0.94) 100%),
+    linear-gradient(to top, #0a0a0a 2%, rgba(10, 10, 10, 0.6) 14%, transparent 34%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.35), transparent 22%);
+  pointer-events: none;
+}
+
+/* Wrapper that gives any photo the old-print look: vignette + grain */
+.photo-frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+}
+.photo-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+.photo-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+/* Animated underline for inline links */
+.link-slide {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  padding-bottom: 2px;
+}
+.link-slide:hover {
+  background-size: 100% 1px;
+}
+
+/* ——— Article prose ——— */
+
+.prose {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.prose p {
+  text-align: justify;
+}
+
+.prose > * + * {
+  margin-top: 1.5em;
+}
+
+.prose h2,
+.prose h3 {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.prose h2 {
+  font-size: 1.75rem;
+  margin-top: 2.5em;
+  line-height: 1.25;
+}
+
+.prose h3 {
+  font-size: 1.35rem;
+  margin-top: 2em;
+}
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: text-decoration-color 0.2s ease;
+}
+.prose a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.prose blockquote {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-style: italic;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  border-left: 2px solid var(--accent);
+  padding-left: 1.5rem;
+  color: var(--muted);
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.5em;
+}
+.prose li::marker {
+  color: var(--muted);
+}
+
+.prose hr {
+  border: none;
+  text-align: center;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+.prose hr::after {
+  content: "· · ·";
+  color: var(--muted);
+  letter-spacing: 0.5em;
+  font-size: 0.9rem;
+}
+
+.prose img {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.prose code:not(pre code) {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.875em;
+  background: var(--faint);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+.prose pre {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.875rem;
+  line-height: 1.7;
+  background: var(--surface);
+  border: 1px solid var(--faint);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  overflow-x: auto;
+}
+
+/* rehype-pretty-code tokens — the site is always dark */
+.prose pre code span {
+  color: var(--shiki-dark);
+}
+
+/* Traveling pulse for diagram arrows and boxes (e.g. MainframeAgentsDiagram):
+   each element lights up red in turn, tracing the actual flow through the
+   process (including boxes, whose border flashes too). Every element shares
+   this duration; animation-delay (set per-element, inline) staggers them
+   into a repeating chase since the phase relationship stays constant across
+   loops when the duration matches. */
+@keyframes diagram-flow {
+  0% {
+    color: var(--muted);
+    border-color: var(--faint);
+  }
+  4% {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+  10% {
+    color: var(--muted);
+    border-color: var(--faint);
+  }
+  100% {
+    color: var(--muted);
+    border-color: var(--faint);
+  }
+}
+.diagram-flow-arrow {
+  animation: diagram-flow 12s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .diagram-flow-arrow {
+    animation: none;
+  }
+}
+
+/* The translator/reviewer boxes and the connector between them flash twice
+   per 12s cycle (once per review pass) instead of getting a fake duplicate
+   "second pass" — real elements lighting up again, not new ones standing in
+   for them. Timestamps (as % of the shared 12s cycle): translator 3s/7s,
+   connector 4s/8s, reviewer 5s/9s — matching the .diagram-flow-arrow beats
+   around them (0,1,2s in, 6s rejected, 10,11s out). */
+@keyframes translator-flow {
+  0%,
+  21%,
+  29%,
+  54%,
+  62%,
+  100% {
+    color: var(--muted);
+    border-color: var(--faint);
+  }
+  25%,
+  58% {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+/* Two separate directions, not one symbol standing in for both: forward
+   (submit to the reviewer) fires twice, once per pass — 33% and 67%, either
+   side of the reviewer's own two flashes. Back (sent back to the translator)
+   fires once, at 50%, in the gap between the reviewer's first check (ends
+   46%) and the translator's rewrite (starts 54%) — the same beat as the
+   ↺ "Changes requested" line's own delay (6s = 50% of the 12s cycle), so
+   only one of the two arrows is ever lit at a time, in the order they'd
+   really happen. */
+@keyframes connector-flow-forward {
+  0%,
+  29%,
+  37%,
+  63%,
+  71%,
+  100% {
+    color: var(--muted);
+  }
+  33%,
+  67% {
+    color: var(--accent);
+  }
+}
+@keyframes connector-flow-back {
+  0%,
+  46%,
+  54%,
+  100% {
+    color: var(--muted);
+  }
+  50% {
+    color: var(--accent);
+  }
+}
+@keyframes reviewer-flow {
+  0%,
+  38%,
+  46%,
+  71%,
+  79%,
+  100% {
+    color: var(--muted);
+    border-color: var(--faint);
+  }
+  42%,
+  75% {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+}
+.translator-flow {
+  animation: translator-flow 12s ease-in-out infinite;
+}
+.connector-flow-forward {
+  animation: connector-flow-forward 12s ease-in-out infinite;
+}
+.connector-flow-back {
+  animation: connector-flow-back 12s ease-in-out infinite;
+}
+.reviewer-flow {
+  animation: reviewer-flow 12s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .translator-flow,
+  .connector-flow-forward,
+  .connector-flow-back,
+  .reviewer-flow {
+    animation: none;
+  }
 }

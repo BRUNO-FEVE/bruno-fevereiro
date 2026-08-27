@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# claude code (local-only settings; project skills in .claude/skills stay tracked)
+.claude/settings.local.json
+
+# playwright mcp session artifacts
+.playwright-mcp/
