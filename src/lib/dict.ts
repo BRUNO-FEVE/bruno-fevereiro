@@ -15,8 +15,8 @@ export const ui = {
   heroLine2: { en: "small, careful", pt: "pequenas e cuidadosas" },
   heroLine3: { en: "things.", pt: "coisas." },
   heroBio: {
-    en: "Full-stack engineer at Bradesco Seguros, building multi-agent AI systems on the Claude API, scalable Java microservices, and front-end platforms used by dozens of teams. I taught 300+ engineers to work with AI, and I write about how it all gets made.",
-    pt: "Engenheiro full-stack no Bradesco Seguros. Construo sistemas multi-agente de IA com a Claude API, microsserviços Java escaláveis e plataformas de front-end usadas por dezenas de equipes. Ensinei 300+ engenheiros a trabalhar com IA e escrevo sobre como tudo isso é feito.",
+    en: "Full-stack engineer at Bradesco Seguros. I architected the company's first Micro Frontend platform, now used by 8 teams and cutting project setup time by ~75%, and build multi-agent AI systems, including a code review agent that cuts review time by ~90%. I taught 300+ engineers to work with AI, and I write about how it all gets made.",
+    pt: "Engenheiro full-stack no Bradesco Seguros. Arquitetei a primeira plataforma de Micro Frontends da empresa, hoje usada por 8 equipes, reduzindo o tempo de setup de projetos em ~75%, e construo sistemas multi-agente de IA, incluindo um agente de code review que reduz o tempo de revisão em ~90%. Ensinei 300+ engenheiros a trabalhar com IA e escrevo sobre como tudo isso é feito.",
   },
   scroll: { en: "Scroll ↓", pt: "Role ↓" },
 
