@@ -3,6 +3,7 @@
 import Image from "next/image";
 import {
   AnimatePresence,
+  animate,
   motion,
   useAnimationFrame,
   useMotionValue,
@@ -25,7 +26,6 @@ export type GalleryPhoto = { src: string; alt: string; caption?: Localized };
 
 export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   const [active, setActive] = useState<number | null>(null);
-  const [zoomed, setZoomed] = useState(false);
   const [copies, setCopies] = useState(2);
   const viewportRef = useRef<HTMLDivElement>(null);
   // spinningRef: the drag gesture or its inertia glide currently owns x.
@@ -37,6 +37,12 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   const activeRef = useRef<number | null>(null);
   const reducedRef = useRef(false);
   const x = useMotionValue(0);
+  // Lightbox swipe offset. Kept unconstrained (no dragConstraints): with a
+  // zero-width constraint range, framer's elastic math degenerates and the
+  // reported drag offset stops reliably tracking which way the finger moved
+  // (confirmed against raw pointerdown/pointerup coordinates while building
+  // this). Free dragging plus a manual reset avoids that.
+  const imgX = useMotionValue(0);
 
   const loop = photos.length * CELL;
 
@@ -77,8 +83,8 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
   });
 
   useEffect(() => {
-    setZoomed(false);
-  }, [active]);
+    imgX.set(0);
+  }, [active, imgX]);
 
   useEffect(() => {
     if (active === null) return;
@@ -204,30 +210,53 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             onClick={() => setActive(null)}
-            className="fixed inset-0 z-40 flex cursor-zoom-out flex-col items-center justify-center gap-4 bg-black/95 p-6"
+            className="fixed inset-0 z-40 flex cursor-pointer flex-col items-center justify-center gap-4 bg-black/95 p-6"
           >
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setActive(null);
+              }}
+              aria-label="Close"
+              className="absolute top-6 left-6 z-10 cursor-pointer p-2 text-2xl text-white/50 transition-colors hover:text-white"
+            >
+              ←
+            </button>
             <motion.div
               key={photos[active].src}
               initial={{ opacity: 0, scale: 0.92, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.45, ease: EASE }}
-              onClick={(e) => {
-                e.stopPropagation();
-                setZoomed((z) => !z);
+              // Touch swipe: the keyboard ←→ handler above doesn't reach
+              // mobile, so a horizontal drag on the image itself is the
+              // touch equivalent. Drag left → next, drag right → previous;
+              // below the threshold it springs back to center.
+              drag={photos.length > 1 ? "x" : false}
+              style={{ x: imgX }}
+              onDragEnd={(_, info) => {
+                const threshold = 60;
+                if (info.offset.x <= -threshold) {
+                  imgX.set(0);
+                  setActive((i) => ((i ?? 0) + 1) % photos.length);
+                } else if (info.offset.x >= threshold) {
+                  imgX.set(0);
+                  setActive((i) => ((i ?? 0) - 1 + photos.length) % photos.length);
+                } else {
+                  animate(imgX, 0, { type: "spring", stiffness: 500, damping: 40 });
+                }
               }}
-              className={`relative w-full transition-all duration-300 ease-out ${
-                zoomed
-                  ? "h-[95vh] max-w-[95vw] cursor-zoom-out"
-                  : "h-[78vh] max-w-4xl cursor-zoom-in"
-              }`}
+              onClick={(e) => e.stopPropagation()}
+              className="relative h-[78vh] w-full max-w-4xl touch-pan-y cursor-grab active:cursor-grabbing"
             >
               <Image
                 src={photos[active].src}
                 alt={photos[active].alt}
                 fill
+                draggable={false}
                 sizes="95vw"
-                className="object-contain"
+                className="pointer-events-none object-contain"
               />
             </motion.div>
             <motion.div
@@ -245,11 +274,19 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
               </p>
               <p className="text-[0.65rem] tracking-[0.25em] text-white/35 uppercase">
                 {photos.length > 1 && (
-                  <span>
-                    {active + 1} / {photos.length} · ←→ ·{" "}
-                  </span>
+                  <>
+                    {active + 1} / {photos.length}
+                    <span className="hidden sm:inline"> · ←→</span>
+                    <span className="sm:hidden">
+                      {" · "}
+                      <T text={ui.swipeHint} />
+                    </span>
+                  </>
                 )}
-                <T text={ui.escToClose} />
+                <span className="hidden sm:inline">
+                  {photos.length > 1 && " · "}
+                  <T text={ui.escToClose} />
+                </span>
               </p>
             </motion.div>
           </motion.div>

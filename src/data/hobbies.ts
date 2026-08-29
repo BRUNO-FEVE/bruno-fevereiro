@@ -155,14 +155,6 @@ export const photography: { photos: HobbyPhoto[] } = {
       },
     },
     {
-      src: "/photo-04.jpg",
-      alt: "Mirror selfie in a tuxedo shirt and bow tie",
-      caption: {
-        en: "Black-tie fitting. The cummerbund won the argument.",
-        pt: "Prova do black-tie. A faixa venceu a discussão.",
-      },
-    },
-    {
       src: "/photo-05.jpg",
       alt: "Golden light through reeded glass",
       caption: {

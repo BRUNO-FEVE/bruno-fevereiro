@@ -62,6 +62,7 @@ export const ui = {
     pt: "Passe o mouse para pausar · arraste para navegar",
   },
   escToClose: { en: "ESC to close", pt: "ESC para fechar" },
+  swipeHint: { en: "swipe ↔", pt: "deslize ↔" },
 
   // writing pages
   writingTitle: { en: "Writing", pt: "Textos" },
