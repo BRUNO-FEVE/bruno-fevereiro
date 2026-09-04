@@ -89,8 +89,8 @@ export const projects: Project[] = [
     },
     details: [
       {
-        en: "Early in 2026, AWS brought in a dedicated AWS ProServe team to help drive the migration.",
-        pt: "No início de 2026, a AWS trouxe um time dedicado do AWS ProServe para ajudar a conduzir a migração.",
+        en: "Early in 2026, AWS brought in a dedicated team to help drive the migration.",
+        pt: "No início de 2026, a AWS trouxe um time dedicado para ajudar a conduzir a migração.",
       },
       {
         en: "AWS Transform handled converting the Mainframe backend to Java, and I was in charge of the Micro Frontend part: three AI agents that learn the actual Mainframe screen patterns well enough to rebuild them as modern UI.",
@@ -114,8 +114,8 @@ export const projects: Project[] = [
         name: "Douglas Ramos",
         link: "https://www.linkedin.com/in/douglasrogerioramos/",
         note: {
-          en: "led the AWS ProServe team on this migration, on the mainframe and backend side.",
-          pt: "liderou o time do AWS ProServe nessa migração, no lado do mainframe e backend.",
+          en: "led the team on this migration, on the mainframe and backend side.",
+          pt: "liderou o time nessa migração, no lado do mainframe e backend.",
         },
         afterDetailIndex: 1,
         position: "before",
